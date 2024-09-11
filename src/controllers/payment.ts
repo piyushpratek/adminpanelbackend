@@ -5,14 +5,18 @@ import { Coupon } from "../models/coupon.js";
 import ErrorHandler from "../utils/utility-class.js";
 
 export const createPaymentIntent = catchAsyncErrors(async (req, res, next) => {
-  const { amount } = req.body;
+  const { amount, description } = req.body;
 
   if (!amount) return next(new ErrorHandler("Please enter amount", HttpStatus.BAD_REQUEST));
+
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Number(amount) * 100,
     currency: "inr",
+    description: description || "default description"
   });
+
+  console.log(`PaymentIntent created with description: ${description}`);
 
   return res.status(HttpStatus.CREATED).json({
     success: true,
